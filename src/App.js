@@ -1,23 +1,46 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import Data from './data';
 
 function App() {
 
-  const [ state, setState ] = useState(Data)
-  const [ value, setValue ] = useState({ username : "", website : "", password : ""})
+  // all State
+  const [state, setState] = useState([{ username: "", website: "", password: "" }])
+  const [value, setValue] = useState({ username: "", website: "", password: "" })
 
+
+  // Functions 
   const onChange = (e) => {
-    setValue({...value, [e.target.name] : e.target.value})
+    setValue({ ...value, [e.target.name]: e.target.value })
   }
 
+  // Get all Saved Password 
+  let Data = localStorage.getItem("password")
+  const getPassword = () => {
+    setState(JSON.parse(Data))
+  }
+
+  //  Adding Passwords
   const handleSubmit = (e) => {
-      e.preventDefault();
-      setState(state.concat(value))
-      localStorage.setItem("password", JSON.stringify(value))
-      setValue({username : "", website : "", password : ""})
+    e.preventDefault();
+    let newData = state.concat(value)
+    setState(newData)
+    localStorage.setItem("password", JSON.stringify(newData))
+    setValue({ username: "", website: "", password: "" })
   }
 
+  // Delete a Password 
+  const deletePassword = async (website) => {
+    let dataAterDelete = state.filter((elem) => {
+      return elem.website !== website
+    })
+    await setState(dataAterDelete)
+    localStorage.setItem("password", JSON.stringify(dataAterDelete))
+  }
+
+  // useState Function to render on load
+  useEffect(() => {
+    getPassword()
+  }, [])
 
   return (
     <div className="App">
@@ -71,12 +94,12 @@ function App() {
             </thead>
             <tbody>
               {state.map(((elem, index) => {
-               return  <tr key = {index}>
-                  <th scope="row">{index+1}</th>
+                return <tr key={index}>
+                  <th scope="row">{index + 1}</th>
                   <td>{elem.website}</td>
                   <td>{elem.username}</td>
                   <td>{elem.password}</td>
-                  <td>Delete</td>
+                  <td>{ <button className="btn btn-sm btn-dark" onClick={() => deletePassword(elem.website)}> Delete</button> }</td>
                 </tr>
               }))}
 
@@ -121,7 +144,7 @@ function App() {
                   aria-describedby="emailHelp"
                   value={value.username}
                   onChange={onChange}
-                  
+
                 />
               </div>
               {/* Input for password */}
