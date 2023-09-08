@@ -2,6 +2,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const FetchAllPass = require('../middleware/FetchAllPass')
+const bcrypt = require('bcryptjs');
 
 // Moongoose Scheme import
 const Pass = require('../modals/Pass');
@@ -24,11 +25,15 @@ router.post('/addpass', FetchAllPass, [
         return res.status(400).json({ errors: errors.array() });
     }
     try {
+        //securing password by adding hashing
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(req.body.password, salt)
+
         const newPass = await new Pass({
             user: req.user.id,
             website: req.body.website,
             username: req.body.username,
-            password: req.body.username
+            password: hashedPassword
         })
         const savedPass = await newPass.save();
         res.send(savedPass);
@@ -70,7 +75,7 @@ router.put('/updatepass/:id', FetchAllPass, async (req, res) => {
         let newPass = await Pass.findById(req.params.id)
 
         if (!newPass) {
-            res.status(404).send("Details not found")
+            return res.status(404).send("Details not found")
         }
         const id = newPass.user.toString()
 
