@@ -44,14 +44,12 @@ function App() {
 
   //  Mask Password 
   const maskPassword = (length) => {
-    let str= ""
-     for (let index = 0; index < length; index++) {
-        str += "*"       
-     }
-     return str
+    let str = ""
+    for (let index = 0; index < length; index++) {
+      str += "*"
+    }
+    return str
   }
-
- 
 
   // useState Function to render on load
   useEffect(() => {
@@ -120,7 +118,7 @@ function App() {
                     fill="currentColor"
                     className="bi bi-clipboard"
                     viewBox="0 0 16 16"
-                    onClick={()=> {
+                    onClick={() => {
                       copyText(elem.username)
                     }}
                   >
@@ -136,7 +134,7 @@ function App() {
                     fill="currentColor"
                     className="bi bi-clipboard"
                     viewBox="0 0 16 16"
-                    onClick={()=> {
+                    onClick={() => {
                       copyText(elem.password)
                     }}
                   >
