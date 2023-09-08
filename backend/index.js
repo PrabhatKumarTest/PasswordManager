@@ -24,6 +24,7 @@ app.get('/', (req, res) => {
 
 // Router API Calls
 app.use('/api/auth', require('./routes/auth'))
+app.use('/api/pass', require('./routes/pass'))
 
 
 // App Running on 
