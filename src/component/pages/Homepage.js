@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const HomePage = () => {
+  let host = "https://ominous-garbanzo-979w5qgqwvx6hx5xv-5000.app.github.dev/"
   const navigate = useNavigate()
   let authtoken = localStorage.getItem('authtoken')
 
@@ -20,7 +21,7 @@ const HomePage = () => {
   const getPassword = async () => {
     // API call
     try {
-      const response = await fetch(`http://localhost:5000/api/pass/fetchallpass`, {
+      const response = await fetch(`${host}api/pass/fetchallpass`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +40,7 @@ const HomePage = () => {
   const addPasswords = async () => {
     // API Call
     try {
-      const response = await fetch(`http://localhost:5000/api/pass/addpass`, {
+      const response = await fetch(`${host}api/pass/addpass`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +68,7 @@ const HomePage = () => {
   const deletePassword = async (id) => {
     // API Call 
      try {
-      const response = await fetch(`http://localhost:5000/api/pass/deletepass/${id}`, {
+      const response = await fetch(`${host}api/pass/deletepass/${id}`, {
         method: "DELETE",
         mode: "cors",
         headers: {

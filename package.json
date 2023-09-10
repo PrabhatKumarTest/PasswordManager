@@ -39,5 +39,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "main": "index.js",
+  "repository": "https://github.com/PrabhatKumarTest/PasswordManager",
+  "author": "PrabhatKumarTest <143084541+PrabhatKumarTest@users.noreply.github.com>",
+  "license": "MIT"
 }

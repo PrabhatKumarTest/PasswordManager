@@ -35,6 +35,9 @@ const Login = () => {
             else if (json.msg){
                 alert("Invalid User Credentials, Please Login agin!")
             }
+            else if (json.error){
+                alert('Server Error')
+            }
         } catch (error) {
             console.error({ error })
         }
