@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
 
+    const navigate = useNavigate();
     const [value, setValue] = useState({ email: "", password: "" })
     const [user, setUser] = useState({ email: "", password: "" })
 
@@ -16,10 +17,8 @@ const Login = () => {
         loginUser(user)
     }
 
-    // let navigate = useNavigate();
     const loginUser = async () => {
         try {
-            console.log(value)
             const response = await fetch('http://localhost:5000/api/auth/login',
                 {
                     method: "POST",
@@ -29,9 +28,15 @@ const Login = () => {
                     body: JSON.stringify(value),
                 })
             const json = await response.json()
-            console.log(json)
+            if (json.jwtToken) {
+                localStorage.setItem("authtoken", JSON.stringify(json.jwtToken))
+                navigate("/");
+            }
+            else if (json.msg){
+                alert("Invalid User Credentials, Please Login agin!")
+            }
         } catch (error) {
-            console.log({ error })
+            console.error({ error })
         }
     }
 
@@ -60,6 +65,7 @@ const Login = () => {
                                     name="email"
                                     value={value.email}
                                     onChange={onChange}
+                                    required
                                 />
                                 <div id="emailHelp" className="form-text">
                                     We'll never share your email with anyone else.
@@ -76,6 +82,7 @@ const Login = () => {
                                     name="password"
                                     value={value.password}
                                     onChange={onChange}
+                                    required
                                 />
                             </div>
 

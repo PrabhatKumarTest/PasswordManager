@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 const HomePage = () => {
-    
+  const navigate = useNavigate()
+  let authtoken = localStorage.getItem('authtoken')
+
   // all State
   const [state, setState] = useState([])
   const [value, setValue] = useState({ username: "", website: "", password: "" })
@@ -14,31 +17,72 @@ const HomePage = () => {
   }
 
   // Get all Saved Password 
-  let Data = localStorage.getItem("password")
-  const getPassword = () => {
-    if (Data) {
-      setState(JSON.parse(Data))
-    } else {
-      setState([])
+  const getPassword = async () => {
+    // API call
+    try {
+      const response = await fetch(`http://localhost:5000/api/pass/fetchallpass`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          'authtoken': authtoken
+        },
+      });
+      // Resposne from Backend
+      const json = await response.json();
+      // Filling Received Pass into state
+      setState(json.allPass)
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+
+  const addPasswords = async () => {
+    // API Call
+    try {
+      const response = await fetch(`http://localhost:5000/api/pass/addpass`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "authtoken": authtoken
+        },
+        body: JSON.stringify(value),
+      });
+      // Response from Backend
+      await response.json();
+      // Calling fetchallpass once again to get new added Pass in state
+      getPassword()
+    } catch (error) {
+      console.error(error.message)
     }
   }
 
   //  Adding Passwords
   const handleSubmit = (e) => {
     e.preventDefault();
-    let newData = state.concat(value)
-    setState(newData)
-    localStorage.setItem("password", JSON.stringify(newData))
+    addPasswords()
     setValue({ username: "", website: "", password: "" })
   }
 
   // Delete a Password 
-  const deletePassword = (website) => {
-    let dataAterDelete = state.filter((elem) => {
-      return elem.website !== website
-    })
-    setState(dataAterDelete)
-    localStorage.setItem("password", JSON.stringify(dataAterDelete))
+  const deletePassword = async (id) => {
+    // API Call 
+     try {
+      const response = await fetch(`http://localhost:5000/api/pass/deletepass/${id}`, {
+        method: "DELETE",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          "authtoken": authtoken
+        },
+      });
+      // Response From Backend if sucessfull : {sucess , deleted note}
+      const json = await response.json()
+      alert(json.Sucess)
+      // Calling fetchallpass once again to get new added Pass in state
+      getPassword();
+    } catch (error) {
+      console.error(error.message)
+    }
   }
 
   // Copy Text 
@@ -59,11 +103,14 @@ const HomePage = () => {
 
   // useState Function to render on load
   useEffect(() => {
+    if (!localStorage.getItem("authtoken")) {
+      return navigate('/login')
+    }
     getPassword()// eslint-disable-next-line
   }, [])
   return (
     <div>
-        {/* Main Body for application */}
+      {/* Main Body for application */}
       <div className="container">
         {/* Table start */}
         <div className=" table-responsive">
@@ -114,13 +161,13 @@ const HomePage = () => {
                   </svg>
                   </span>
                   </td>
-                  <td>{<button className="btn btn-sm btn-dark" onClick={() => deletePassword(elem.website)}> Delete</button>}</td>
+                  <td>{<button className="btn btn-sm btn-dark" onClick={() => deletePassword(elem._id)}> Delete</button>}</td>
                 </tr>
               }))
                 :
                 <tr>
                   <th scope="row">1</th>
-                  <td colspan="4">No Data to Display, Fill details below to add!</td>
+                  <td colSpan="4">No Data to Display, Fill details below to add!</td>
                 </tr>
               }
 
